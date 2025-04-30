@@ -14,7 +14,7 @@
       const codigo = document.getElementById('codigo').value.trim();
       if (!codigo) return alert("Por favor ingresa un código");
 
-      const imagenUrl = `https://sitio-remoto.com/${codigo}.jpg`;
+      const imagenUrl = `https://emsavall-cp5034.wordpresstemporal.com/qr/codes/${codigo}.png`;
 
       fetch(imagenUrl)
         .then(response => {
@@ -31,7 +31,7 @@
           console.log(error.message);
 
           // Intentar generar la imagen llamando a un script PHP (por ejemplo)
-          const generarUrl = `https://sitio-remoto.com/generar_imagen.php?codigo=${codigo}`;
+          const generarUrl = `https://emsavall-cp5034.wordpresstemporal.com/qr/get-image.php?codigo=${codigo}`;
 
           try {
             const genResponse = await fetch(generarUrl);
