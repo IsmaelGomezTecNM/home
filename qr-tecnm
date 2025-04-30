@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Consulta de Imagen</title>
+</head>
+<body>
+  <input type="text" id="codigo" placeholder="Ingresa el código (ej: C29690001)" />
+  <button onclick="buscarImagen()">Buscar Imagen</button>
+  <br><br>
+  <img id="resultado" src="" alt="Imagen cargada aparecerá aquí" style="max-width: 300px;" />
+  
+  <script>
+    function buscarImagen() {
+      const codigo = document.getElementById('codigo').value.trim();
+      if (!codigo) return alert("Por favor ingresa un código");
+
+      const imagenUrl = `https://sitio-remoto.com/${codigo}.jpg`;
+
+      fetch(imagenUrl)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error("Imagen no encontrada, intentando generarla...");
+          }
+          return response.blob();
+        })
+        .then(blob => {
+          const imgURL = URL.createObjectURL(blob);
+          document.getElementById('resultado').src = imgURL;
+        })
+        .catch(async error => {
+          console.log(error.message);
+
+          // Intentar generar la imagen llamando a un script PHP (por ejemplo)
+          const generarUrl = `https://sitio-remoto.com/generar_imagen.php?codigo=${codigo}`;
+
+          try {
+            const genResponse = await fetch(generarUrl);
+            if (!genResponse.ok) throw new Error("No se pudo generar la imagen");
+
+            const newBlob = await genResponse.blob();
+            const imgURL = URL.createObjectURL(newBlob);
+            document.getElementById('resultado').src = imgURL;
+          } catch (e) {
+            alert("No se pudo obtener ni generar la imagen.");
+          }
+        });
+    }
+  </script>
+</body>
+</html>
