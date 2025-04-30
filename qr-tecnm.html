@@ -8,7 +8,7 @@
   <input type="text" id="codigo" placeholder="Ingresa tu número de Control (ej: C29690001)" />
   <button onclick="buscarImagen()">Buscar</button>
   <br><br>
-  <a id="enlace" href="" download>
+  <a id="enlace" href="" download="">
   <img id="resultado" src="" alt="Imagen cargada aparecerá aquí" style="max-width: 300px;" />
   </a>
   <script>
@@ -43,6 +43,7 @@
             const imgURL = URL.createObjectURL(newBlob);
             document.getElementById('resultado').src = imgURL;
             document.getElementById('enlace').href = imgURL;
+            document.getElementById('enlace').download = codigo;
           } catch (e) {
             alert("No se pudo obtener ni generar la imagen.");
           }
