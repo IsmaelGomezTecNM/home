@@ -1,135 +1,135 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-<head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Consulta de QR</title>
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Consulta de QR</title>
 
-<style>
-  body {
-    font-family: 'Segoe UI', Tahoma, sans-serif;
-    background: linear-gradient(135deg, #4facfe, #00f2fe);
-    margin: 0;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
+		<style>
+			body {
+				font-family: "Segoe UI", Tahoma, sans-serif;
+				background: linear-gradient(135deg, #4facfe, #00f2fe);
+				margin: 0;
+				height: 100vh;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+			}
 
-  .container {
-    background: white;
-    padding: 30px;
-    border-radius: 15px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-    text-align: center;
-    width: 90%;
-    max-width: 400px;
-  }
+			.container {
+				background: white;
+				padding: 30px;
+				border-radius: 15px;
+				box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+				text-align: center;
+				width: 90%;
+				max-width: 400px;
+			}
 
-  h1 {
-    margin-bottom: 20px;
-    color: #333;
-  }
+			h1 {
+				margin-bottom: 20px;
+				color: #333;
+			}
 
-  input {
-    width: 100%;
-    padding: 12px;
-    border: 2px solid #ddd;
-    border-radius: 8px;
-    font-size: 16px;
-    margin-bottom: 15px;
-    transition: 0.3s;
-  }
+			input {
+				width: 100%;
+				padding: 12px;
+				border: 2px solid #ddd;
+				border-radius: 8px;
+				font-size: 16px;
+				margin-bottom: 15px;
+				transition: 0.3s;
+			}
 
-  input:focus {
-    border-color: #4facfe;
-    outline: none;
-  }
+			input:focus {
+				border-color: #4facfe;
+				outline: none;
+			}
 
-  button {
-    width: 100%;
-    padding: 12px;
-    background: #4facfe;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: 0.3s;
-  }
+			button {
+				width: 100%;
+				padding: 12px;
+				background: #4facfe;
+				color: white;
+				border: none;
+				border-radius: 8px;
+				font-size: 16px;
+				cursor: pointer;
+				transition: 0.3s;
+			}
 
-  button:hover {
-    background: #3a8dde;
-  }
+			button:hover {
+				background: #3a8dde;
+			}
 
-  img {
-    margin-top: 20px;
-    max-width: 250px;
-    border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-  }
+			img {
+				margin-top: 20px;
+				max-width: 250px;
+				border-radius: 10px;
+				box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+			}
 
-  .hint {
-    font-size: 14px;
-    color: #777;
-    margin-bottom: 15px;
-  }
-</style>
-</head>
+			.hint {
+				font-size: 14px;
+				color: #777;
+				margin-bottom: 15px;
+			}
+		</style>
+	</head>
 
-<body>
+	<body>
+		<div class="container">
+			<h1>Consulta tu QR</h1>
 
-<div class="container">
-  <h1>Consulta tu QR</h1>
+			<p class="hint">Ingresa tu número de control</p>
 
-  <p class="hint">Ingresa tu número de control</p>
+			<input type="text" id="codigo" placeholder="Ej: C29690001" />
+			<button onclick="buscarImagen()">Buscar</button>
 
-  <input type="text" id="codigo" placeholder="Ej: C29690001" />
-  <button onclick="buscarImagen()">Buscar</button>
+			<a id="enlace" href="" download="">
+				<img id="resultado" src="" alt="Tu QR aparecerá aquí" />
+			</a>
+			<p id="message">Cuando salga tu código, dale click para descargarlo</p>
+		</div>
 
-  <a id="enlace" href="" download="">
-    <img id="resultado" src="" alt="Tu QR aparecerá aquí">
-  </a>
-</div>
+		<script>
+			function buscarImagen() {
+				const codigo = document.getElementById("codigo").value.trim();
+				if (!codigo) return alert("Por favor ingresa un código");
 
-<script>
-function buscarImagen() {
-  const codigo = document.getElementById('codigo').value.trim();
-  if (!codigo) return alert("Por favor ingresa un código");
+				const imagenUrl = `https://emsavall-cp5034.wordpresstemporal.com/qr/codes/${codigo}.png`;
 
-  const imagenUrl = `https://emsavall-cp5034.wordpresstemporal.com/qr/codes/${codigo}.png`;
+				fetch(imagenUrl)
+					.then((response) => {
+						if (!response.ok) {
+							throw new Error("Imagen no encontrada, intentando generarla...");
+						}
+						return response.blob();
+					})
+					.then((blob) => {
+						const imgURL = URL.createObjectURL(blob);
+						document.getElementById("resultado").src = imgURL;
+					})
+					.catch(async (error) => {
+						console.log(error.message);
 
-  fetch(imagenUrl)
-    .then(response => {
-      if (!response.ok) {
-        throw new Error("Imagen no encontrada, intentando generarla...");
-      }
-      return response.blob();
-    })
-    .then(blob => {
-      const imgURL = URL.createObjectURL(blob);
-      document.getElementById('resultado').src = imgURL;
-    })
-    .catch(async error => {
-      console.log(error.message);
+						const generarUrl = `https://emsavall-cp5034.wordpresstemporal.com/qr/get-image.php?codigo=${codigo}`;
 
-      const generarUrl = `https://emsavall-cp5034.wordpresstemporal.com/qr/get-image.php?codigo=${codigo}`;
+						try {
+							const genResponse = await fetch(generarUrl);
+							if (!genResponse.ok)
+								throw new Error("No se pudo generar la imagen");
 
-      try {
-        const genResponse = await fetch(generarUrl);
-        if (!genResponse.ok) throw new Error("No se pudo generar la imagen");
+							const newBlob = await genResponse.blob();
+							const imgURL = URL.createObjectURL(newBlob);
 
-        const newBlob = await genResponse.blob();
-        const imgURL = URL.createObjectURL(newBlob);
-
-        document.getElementById('resultado').src = imgURL;
-        document.getElementById('enlace').href = imgURL;
-        document.getElementById('enlace').download = codigo;
-      } catch (e) {
-        alert("No se pudo obtener ni generar la imagen.");
-      }
-    });
-}
-</script>
-
-</body>
+							document.getElementById("resultado").src = imgURL;
+							document.getElementById("enlace").href = imgURL;
+							document.getElementById("enlace").download = codigo;
+						} catch (e) {
+							alert("No se pudo obtener ni generar la imagen.");
+						}
+					});
+			}
+		</script>
+	</body>
 </html>
