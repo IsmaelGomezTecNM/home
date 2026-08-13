@@ -1,2 +1,191 @@
-<h1>Home Page</h1>
-<img src="https://emsavalles.info/fotos/david-medinajpg_20250630131406.webp">
+<!doctype html>
+<html lang="es">
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Consulta de QR</title>
+
+		<style>
+			body {
+				font-family: "Segoe UI", Tahoma, sans-serif;
+				background: linear-gradient(135deg, #4facfe, #00f2fe);
+				margin: 0;
+				height: 100vh;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+			}
+
+			.container {
+				background: white;
+				padding: 30px;
+				border-radius: 15px;
+				box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+				text-align: center;
+				width: 90%;
+				max-width: 400px;
+			}
+
+			h1 {
+				margin-bottom: 20px;
+				color: #333;
+			}
+
+			input {
+				width: 100%;
+				padding: 12px;
+				border: 2px solid #ddd;
+				border-radius: 8px;
+				font-size: 16px;
+				margin-bottom: 15px;
+				transition: 0.3s;
+			}
+
+			input:focus {
+				border-color: #4facfe;
+				outline: none;
+			}
+
+			button {
+				width: 100%;
+				padding: 12px;
+				background: #4facfe;
+				color: white;
+				border: none;
+				border-radius: 8px;
+				font-size: 16px;
+				cursor: pointer;
+				transition: 0.3s;
+			}
+
+			button:hover {
+				background: #3a8dde;
+			}
+
+			img {
+				width:100%
+			}
+			
+			.hint {
+				font-size: 14px;
+				color: #777;
+				margin-bottom: 15px;
+			}
+			.qr{
+				margin:0 auto;
+				width:250px;
+				height: 250px;
+				background-image: url("qr.png");
+				background-size: cover;
+
+			}
+			.qr img{
+				width: 250px;
+				border-radius: 10px;
+				box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+				aspect-ratio: 1/1;
+			}
+			.flex{
+				display: flex;
+				justify-content: center;
+				align-items: center;
+			}
+			.flex img{
+				height: 40px;
+			}
+		</style>
+	</head>
+
+	<body>
+	<div class="container">
+		<div class="flex">
+			<div class="logo">
+				<img src="logo.png">
+			</div>
+			<h1>Consulta tu QR</h1>
+		</div>
+
+		<div class="qr">
+			<a id="enlace" href="#" download="" style="display: none;">
+				<img id="resultado" />
+			</a>
+		</div>
+
+		<p class="hint">Ingresa tu número de control</p>
+
+		<input type="text" id="codigo" placeholder="Ej: 29690001" />
+
+		<button onclick="buscarImagen()">Buscar</button>
+
+		<p id="message">
+			Cuando salga tu código, dale click para descargarlo
+		</p>
+	</div>
+
+	<script>
+		async function buscarImagen() {
+			const codigo = document.getElementById("codigo").value.trim();
+
+			if (!codigo) {
+				alert("Por favor ingresa un código");
+				return;
+			}
+
+			const enlace = document.getElementById("enlace");
+			const resultado = document.getElementById("resultado");
+			const message = document.getElementById("message");
+
+			// Deshabilitar descarga mientras se procesa
+			enlace.style.display = "none";
+			enlace.removeAttribute("href");
+			enlace.removeAttribute("download");
+			resultado.removeAttribute("src");
+
+			message.textContent = "Consultando información...";
+
+			try {
+				/*
+				 * PRIMERO se invoca el backend.
+				 * El backend debe generar/verificar el QR.
+				 */
+				const generarUrl =
+					`https://emsavall-cp5034.wordpresstemporal.com/qr/get-image.php?codigo=${encodeURIComponent(codigo)}`;
+
+				const response = await fetch(generarUrl, {
+					method: "GET",
+					cache: "no-store"
+				});
+
+				if (!response.ok) {
+					throw new Error("No se pudo generar el QR");
+				}
+
+				// El backend devuelve la imagen
+				const blob = await response.blob();
+
+				if (!blob.type.startsWith("image/")) {
+					throw new Error("El backend no devolvió una imagen");
+				}
+
+				const imgURL = URL.createObjectURL(blob);
+
+				// Mostrar QR
+				resultado.src = imgURL;
+
+				// Habilitar descarga SOLO después de la respuesta del backend
+				enlace.href = imgURL;
+				enlace.download = `${codigo}.png`;
+				enlace.style.display = "inline-block";
+
+				message.textContent =
+					"Consulta realizada correctamente. Haz clic en el QR para descargarlo.";
+
+			} catch (error) {
+				console.error(error);
+
+				message.textContent = "No se pudo obtener el QR.";
+				alert("No se pudo obtener ni generar la imagen.");
+			}
+		}
+	</script>
+</body>
+</html>
